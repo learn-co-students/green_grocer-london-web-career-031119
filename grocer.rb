@@ -18,11 +18,10 @@ new
 end
 
 def apply_coupons(cart, coupons)
-
   coupons.each do |hash|
     if !cart.include?(hash[:item])
       break
-    else
+    elsif !cart.include?("#{hash[:item]} W/COUPON")
   item = hash[:item].dup
   new_item = hash[:item].dup
   new_item << " W/COUPON"
@@ -32,24 +31,52 @@ def apply_coupons(cart, coupons)
   num = cart[item][:count]
   cart[new_item][:count] = num / hash[:num]
   cart[item][:count] = num % hash[:num]
-
+else
 end
 end
- cart
+cart
 end
 
+# def apply_coupons(cart, coupons)
+#   coupons.each do |hash|
+#     if !cart.include?(hash[:item])
+#       break
+#     end
+#   if cart["#{hash[:item]} W/COUPON"] == nil
+#
+#   item = hash[:item].dup
+#   new_item = hash[:item].dup
+#   new_item << " W/COUPON"
+#   cart[new_item] = {}
+#   cart[new_item][:price] = hash[:cost]
+#   cart[new_item][:clearance] = cart[item][:clearance]
+#   num = cart[item][:count]
+#   cart[new_item][:count] = num / hash[:num]
+#   cart[item][:count] = num % hash[:num]
+#   else
+#     # coupon_item = hash[:item]
+#     # num = cart[coupon_item][:count]
+#      # if cart[coupon_item][:count] > cart["#{hash[:item]} W/COUPON"][:count]
+#        cart["#{hash[:item]} W/COUPON"][:count] = num / hash[:num]
+#        cart[coupon_item][:count] = num % hash[:num]
+# end
+#
+# end
+# cart
+# end
 
-cart1 = {"AVOCADO"=>{:price=>3.0, :clearance=>true, :count=>5}}
 
-
-
-coupons1 = [{:item=>"AVOCADO", :num=>2, :cost=>5.0}]
-            # {:item=>"AVOCADO", :num=>2, :cost=>5.0}]
+# cart1 = {"AVOCADO"=>{:price=>3.0, :clearance=>true, :count=>5}}
+#
+#
+#
+# coupons1 = [{:item=>"AVOCADO", :num=>2, :cost=>5.0},
+#         {:item=>"AVOCADO", :num=>2, :cost=>5.0}]
+#
+# p apply_coupons(cart1, coupons1)
 
 # {"AVOCADO"=>{:price=>3.0, :clearance=>true, :count=>1},
 #  "AVOCADO W/COUPON"=>{:price=>5.0, :clearance=>true, :count=>2}}
-
-p apply_coupons(cart1, coupons1)
 
 def apply_clearance(cart)
 cart.each do |key, value|
@@ -62,10 +89,14 @@ end
 
 def checkout(cart, coupons)
 newcart = consolidate_cart(cart)
-newcart2 = apply_coupons(newcart)
-discount = apply_clearance(newcart2)
+newcart2 = apply_coupons(newcart, coupons)
+newcart3 = apply_clearance(newcart2)
+price = 0
 
-p discount
+newcart3.each do |key, value|
+price += newcart3[key][:price] * value[:count]
+price > 100 ? price *= 0.9 : price
 
-
+end
+price
 end
